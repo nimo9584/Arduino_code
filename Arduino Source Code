@@ -1,0 +1,78 @@
+int upCounter = 0;
+int downCounter = 31;
+int clockPin = 13; // Pin for the clock LED
+unsigned long previousMillis = 0;
+const long interval = 2000; // 2-second interval
+
+void setup() {
+  // Define digital pins as outputs for the up counter
+  pinMode(2, OUTPUT);
+  pinMode(3, OUTPUT);
+  pinMode(4, OUTPUT);
+  pinMode(5, OUTPUT);
+  pinMode(6, OUTPUT);
+
+  // Define digital pins as outputs for the down counter
+  pinMode(8, OUTPUT);
+  pinMode(9, OUTPUT);
+  pinMode(10, OUTPUT);
+  pinMode(11, OUTPUT);
+  pinMode(12, OUTPUT);
+
+  // Define clockPin as output
+  pinMode(clockPin, OUTPUT);
+
+  // Initialize down counter to 31
+  downCounter = 31;
+
+  // Display the initial value on the down counter pins
+  digitalWrite(8, (downCounter >> 4) & 0b00001);
+  digitalWrite(9, (downCounter >> 3) & 0b00001);
+  digitalWrite(10, (downCounter >> 2) & 0b00001);
+  digitalWrite(11, (downCounter >> 1) & 0b00001);
+  digitalWrite(12, downCounter & 0b00001);
+}
+
+void loop() {
+  unsigned long currentMillis = millis();
+
+  if (currentMillis - previousMillis >= interval) {
+    // Save the last time the clock LED state changed
+    previousMillis = currentMillis;
+
+    // Toggle the clock LED state
+    if (digitalRead(clockPin) == LOW) {
+      digitalWrite(clockPin, HIGH);
+
+      // Increment the up counter
+      upCounter++;
+
+      if (upCounter == 32) {
+        upCounter = 0;
+      }
+
+      // Convert and display the up counter
+      digitalWrite(2, upCounter & 0b00001);
+      digitalWrite(3, (upCounter >> 1) & 0b00001);
+      digitalWrite(4, (upCounter >> 2) & 0b00001);
+      digitalWrite(5, (upCounter >> 3) & 0b00001);
+      digitalWrite(6, (upCounter >> 4) & 0b00001);
+
+      // Decrement the down counter
+      downCounter--;
+
+      if (downCounter < 0) {
+        downCounter = 31;
+      }
+
+      // Convert and display the down counter
+      digitalWrite(8, (downCounter >> 4) & 0b00001);
+      digitalWrite(9, (downCounter >> 3) & 0b00001);
+      digitalWrite(10, (downCounter >> 2) & 0b00001);
+      digitalWrite(11, (downCounter >> 1) & 0b00001);
+      digitalWrite(12, downCounter & 0b00001);
+    } else {
+      digitalWrite(clockPin, LOW);
+    }
+  }
+}
